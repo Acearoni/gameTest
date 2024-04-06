@@ -6,7 +6,12 @@
     <title>Flask App</title>
 </head>
 <body>
-    <h1>Welcome to the Flask App!</h1>
+    <h1>Welcome User</h1>
+    
+    {% if error_message %}
+        <p style="color: red;">{{ error_message }}</p>
+    {% endif %}
+    
     <form action="/" method="POST">
         <label for="name">Enter your name:</label>
         <input type="text" id="name" name="name" required>
