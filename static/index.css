@@ -18,7 +18,6 @@
     max-width: 1200px; /* Set max-width for larger screens */
     height: 400px;
     margin: 0 auto;
-    background-color: rgb(5, 63, 63);
 }
 
 
@@ -26,12 +25,12 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
+    background: content-box linear-gradient(red,black)
 }
 
 .question-container {

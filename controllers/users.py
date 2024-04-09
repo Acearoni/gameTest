@@ -32,7 +32,7 @@ def welcome():
             users = cursor.fetchall()
             cursor.close()
             connection.close()
-            return render_template('welcome.html', users=users)
+            return render_template('temp.html', users=users)
         except Exception as e:
             print("Error fetching users:", e)
             connection.rollback()

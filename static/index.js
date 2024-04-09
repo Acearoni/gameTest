@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() { //sets up an event listener that waits for DOM to fully load. 
     const yesButton = document.getElementById('yesButton');
     const noButton = document.getElementById('noButton');
 
