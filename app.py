@@ -1,6 +1,7 @@
 from flask import Flask
 from controllers.users import users_bp
 
+
 app = Flask(__name__)
 
 # Register users blueprint
