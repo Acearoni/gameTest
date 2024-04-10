@@ -50,19 +50,24 @@ def insert_user(name):
         try:
             cursor = connection.cursor()
 
-            # Insert the new user into the users table
-            cursor.execute("INSERT INTO users (name) VALUES (%s);", (name,))
-            connection.commit()
-
-            cursor.close()
-            connection.close()
-
-            return True  # Return True on successful insertion
-        
+            # Insert the new user into the users table if the name is unique
+            if is_name_unique(name):
+                cursor.execute("INSERT INTO users (name) VALUES (%s);", (name,))
+                connection.commit()
+                cursor.close()
+                connection.close()
+                return True  # Return True on successful insertion
+            else:
+                print("Name already exists. Insertion aborted.")
+                cursor.close()
+                connection.close()
+                return False
+            
         except Exception as e:
             print("Error inserting user:", e)
             connection.rollback()
             cursor.close()
             connection.close()
+            return False  # Default to False if insertion fails
     
-    return False  # Default to False if insertion fails
+    return False  # Default to False if unable to connect to database

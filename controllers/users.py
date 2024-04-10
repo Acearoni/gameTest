@@ -12,7 +12,7 @@ def index():
         if name:
             if is_name_unique(name):
                 if insert_user(name):
-                    return redirect(url_for('users.welcome'))
+                    return redirect(url_for('users.temp'))
                 else:
                     error_message = "Error occurred while processing the request."
             else:
@@ -22,8 +22,31 @@ def index():
 
     return render_template('index.html', error_message=error_message)
 
-@users_bp.route('/welcome')
+@users_bp.route('/welcome', methods=['GET', 'POST'])
 def welcome():
+    error_message = None
+
+    if request.method == 'POST':
+        name = request.form.get('name')
+
+        if name:
+            if is_name_unique(name):
+                if insert_user(name):
+                    # Redirect to 'temp.html' after successful insertion
+                    return redirect(url_for('users.temp'))
+                else:
+                    error_message = "Error occurred while processing the request."
+            else:
+                error_message = "Name already exists. Please choose a different name."
+        else:
+            error_message = "Name is required."
+
+    # Render the 'welcome.html' template with error message or initial load
+    return render_template('welcome.html', error_message=error_message)
+
+
+@users_bp.route('/temp')
+def temp():
     connection = connect_to_database()
     if connection:
         try:
