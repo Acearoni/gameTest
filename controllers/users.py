@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for
-from config.database import is_name_unique, insert_user, connect_to_database
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from models.user import User
 
 users_bp = Blueprint('users', __name__)
 
@@ -10,8 +10,9 @@ def index():
     if request.method == 'POST':
         name = request.form.get('name')
         if name:
-            if is_name_unique(name):
-                if insert_user(name):
+            if User.is_name_unique(name):
+                if User.insert_user(name):
+                    flash("User successfully added!", "success")
                     return redirect(url_for('users.temp'))
                 else:
                     error_message = "Error occurred while processing the request."
@@ -22,6 +23,24 @@ def index():
 
     return render_template('index.html', error_message=error_message)
 
+@users_bp.route('/temp')
+def temp():
+    from config.database import connect_to_database
+
+    connection = connect_to_database()
+    if connection:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id, name FROM users;")
+                users = cursor.fetchall()
+                return render_template('temp.html', users=users)
+        except Exception as e:
+            print("Error fetching users:", e)
+        finally:
+            connection.close()
+    flash("Failed to connect to the database.", "error")
+    return "Failed to connect to the database."
+
 @users_bp.route('/welcome', methods=['GET', 'POST'])
 def welcome():
     error_message = None
@@ -30,9 +49,9 @@ def welcome():
         name = request.form.get('name')
 
         if name:
-            if is_name_unique(name):
-                if insert_user(name):
-                    # Redirect to 'temp.html' after successful insertion
+            if User.is_name_unique(name):
+                if User.insert_user(name):
+                    flash("User successfully added!", "success")
                     return redirect(url_for('users.temp'))
                 else:
                     error_message = "Error occurred while processing the request."
@@ -41,26 +60,4 @@ def welcome():
         else:
             error_message = "Name is required."
 
-    # Render the 'welcome.html' template with error message or initial load
     return render_template('welcome.html', error_message=error_message)
-
-
-@users_bp.route('/temp')
-def temp():
-    connection = connect_to_database()
-    if connection:
-        try:
-            cursor = connection.cursor()
-            cursor.execute("SELECT id, name FROM users;")
-            users = cursor.fetchall()
-            cursor.close()
-            connection.close()
-            return render_template('temp.html', users=users)
-        except Exception as e:
-            print("Error fetching users:", e)
-            connection.rollback()
-            cursor.close()
-            connection.close()
-            return "Error occurred while fetching users."
-    else:
-        return "Failed to connect to the database."
