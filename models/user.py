@@ -1,36 +1,10 @@
-from config.database import connect_to_database
+from config.database import connect_to_database, insert_user, is_name_unique
 
 class User:
     @staticmethod
     def is_name_unique(name):
-        connection = connect_to_database()
-        if connection:
-            try:
-                with connection.cursor() as cursor:
-                    cursor.execute("SELECT id FROM users WHERE LOWER(name) = LOWER(%s);", (name,))
-                    existing_user = cursor.fetchone()
-                    return not existing_user
-            except Exception as e:
-                print("Error checking name uniqueness:", e)
-            finally:
-                connection.close()
-        return False
+        return is_name_unique(name)
 
     @staticmethod
     def insert_user(name):
-        if not User.is_name_unique(name):
-            print("Name already exists. Insertion aborted.")
-            return False
-
-        connection = connect_to_database()
-        if connection:
-            try:
-                with connection.cursor() as cursor:
-                    cursor.execute("INSERT INTO users (name) VALUES (%s);", (name,))
-                    connection.commit()
-                    return True
-            except Exception as e:
-                print("Error inserting user:", e)
-            finally:
-                connection.close()
-        return False
+        return insert_user(name)
